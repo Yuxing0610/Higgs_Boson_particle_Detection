@@ -87,7 +87,7 @@ def ridge_regression(y, tx, lambda_):
     loss = square_loss(y, tx, w)
     
     # debug
-    print("Ridge Regression: loss={l}".format(l=loss))
+    # print("Ridge Regression: loss={l}".format(l=loss))
     
     return w, loss
 
