@@ -91,14 +91,18 @@ def ridge_regression(y, tx, lambda_):
     
     return w, loss
 
+def sigmoid(t):
+
+    return 1 / (1+np.exp(-t))
+    
 def logistic_loss(y, tx, w):
     
-    p = 1 / (1+np.exp(-np.dot(tx, w)))
-    return -np.mean(y*np.log(p)+(1-y)*np.log(1-p))
+    p = sigmoid(tx.dot(w))
+    return - (y.T.dot(np.log(p))+(1-y).T.dot(np.log(1-p))) / y.shape[0]
 
 def logistic_gradient(y, tx, w):
     
-    p = 1 / (1+np.exp(-np.dot(tx, w)))
+    p = sigmoid(tx.dot(w))
     return np.dot(tx.T, p-y) / y.shape[0]
 
 def logistic_regression_GD(y, tx, initial_w, max_iters, gamma):
@@ -106,18 +110,26 @@ def logistic_regression_GD(y, tx, initial_w, max_iters, gamma):
     w = initial_w
     y = (y + 1) / 2
     
+    best_w = w
+    min_loss = float('inf')
     for n_iter in range(max_iters):
+        if n_iter > 0 and n_iter % 50 == 0:
+            gamma *= 0.3
+        
         g = logistic_gradient(y, tx, w)
         w = w - gamma * g
         
         # debug
         loss = logistic_loss(y, tx, w)
-        print("Logistic GD({bi}/{ti}): loss={l}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss))
+        if n_iter % 5 == 4:
+            print("Logistic GD({bi}/{ti}): loss={l}".format(
+                  bi=n_iter, ti=max_iters - 1, l=loss))
         
-    loss = logistic_loss(y, tx, w)
+        if (loss < min_loss):
+            min_loss = loss
+            best_w = w
 
-    return w, loss
+    return best_w, min_loss
 
 def logistic_regression_SGD(y, tx, initial_w, batch_size, max_iters, gamma):
 
