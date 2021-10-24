@@ -2,6 +2,8 @@
 
 import numpy as np
 
+eps = 1e-8
+
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
     Generate a minibatch iterator for a dataset.
@@ -98,12 +100,12 @@ def sigmoid(t):
 def logistic_loss(y, tx, w):
     
     p = sigmoid(tx.dot(w))
-    return - (y.T.dot(np.log(p))+(1-y).T.dot(np.log(1-p))) / y.shape[0]
+    return - (y.T.dot(np.log(p+eps))+(1-y).T.dot(np.log(1-p+eps))) / y.shape[0]
 
 def logistic_gradient(y, tx, w):
     
     p = sigmoid(tx.dot(w))
-    return np.dot(tx.T, p-y) / y.shape[0]
+    return np.dot(tx.T, p-y)
 
 def logistic_regression_GD(y, tx, initial_w, max_iters, gamma):
 
@@ -113,7 +115,7 @@ def logistic_regression_GD(y, tx, initial_w, max_iters, gamma):
     best_w = w
     min_loss = float('inf')
     for n_iter in range(max_iters):
-        if n_iter > 0 and n_iter % 50 == 0:
+        if n_iter > 0 and n_iter % 20 == 0:
             gamma *= 0.3
         
         g = logistic_gradient(y, tx, w)
@@ -131,21 +133,44 @@ def logistic_regression_GD(y, tx, initial_w, max_iters, gamma):
 
     return best_w, min_loss
 
-def logistic_regression_SGD(y, tx, initial_w, batch_size, max_iters, gamma):
+def calculate_hessian(y, tx, w):
+    """return the Hessian of the loss function."""
+    p = sigmoid(tx.dot(w))
+#     np.einsum('ij,j->ij', tx.T, (p*(1-p)).flatten())
+    return (tx.T*((p*(1-p)).T)).dot(tx)
+
+
+def logistic_newton(y, tx, w):
+    """return the loss, gradient, and Hessian."""
+    loss = logistic_loss(y, tx, w)
+    grad = logistic_gradient(y, tx, w)
+    hessian = calculate_hessian(y, tx, w)
+    return loss, grad, hessian
+
+def logistic_regression_SGD(y, tx, initial_w, max_iters, gamma):
 
     w = initial_w
     y = (y + 1) / 2
     
+    best_w = w
+    min_loss = float('inf')
     for n_iter in range(max_iters):
-        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
-            g = logistic_gradient(minibatch_y, minibatch_tx, w)
-            w = w - gamma * g
+        if n_iter > 0 and n_iter % 20 == 0:
+            gamma *= 0.3
+            
+        loss, grad, hessian = logistic_newton(y, tx, w)
+        inv_hessian = np.linalg.pinv(hessian)
+        w = w - gamma * inv_hessian.dot(grad)
             
         loss = logistic_loss(y, tx, w)
         
         # debug
         print("LS GD({bi}/{ti}): loss={l}".format(
               bi=n_iter, ti=max_iters - 1, l=loss))
+        
+        if (loss < min_loss):
+            min_loss = loss
+            best_w = w
         
     loss = logistic_loss(y, tx, w)
 
