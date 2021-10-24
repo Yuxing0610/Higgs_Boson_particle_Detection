@@ -6,6 +6,8 @@ import numpy as np
 
 # helper and loss functions
 
+eps = 1e-8
+
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
     Generate a minibatch iterator for a dataset.
@@ -72,7 +74,7 @@ def logistic_loss(y, tx, w):
         loss: the loss of the model
     '''
     p = sigmoid(tx.dot(w))
-    return - (y.T.dot(np.log(p))+(1-y).T.dot(np.log(1-p))) / y.shape[0]
+    return - (y.T.dot(np.log(p+eps))+(1-y).T.dot(np.log(1-p+eps))) / y.shape[0]
 
 def logistic_gradient(y, tx, w):
     '''
@@ -98,7 +100,7 @@ def reg_logistic_loss(y, tx, w, lambda_):
         loss: the loss of the model
     '''
     p = sigmoid(tx.dot(w))
-    return - ((y.T.dot(np.log(p))+(1-y).T.dot(np.log(1-p)))+(lambda_/2)*np.sum(np.square(w))) / y.shape[0]
+    return - ((y.T.dot(np.log(p+eps))+(1-y).T.dot(np.log(1-p+eps)))+(lambda_/2)*np.sum(np.square(w))) / y.shape[0]
 
 def reg_logistic_gradient(y, tx, w, lambda_):
     '''
