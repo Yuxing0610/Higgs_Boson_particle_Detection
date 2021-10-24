@@ -9,8 +9,8 @@ Contains Following files
 >--./project1/scripts/predictions.csv: the result from logistic regression model with newton method.  
 >--./project1/scripts/proj1_helpers.py: contains souce code provided by the course.    
 >--./project1/scripts/project1.ipynb: notebook to run the predictions with all models (current model is Logistic regression with newton method, but can be easily transferred to other methods.  
->--./visualization.ipynb: notebook to give the visualization results of the models.   
->--./visualization_rawdata.ipynb: notebook to give the visualization results of the raw data analysis.  
+>--./project1/scrip/visualization.ipynb: notebook to give the visualization results of the models.   
+>--./project1/scrip/visualization_rawdata.ipynb: notebook to give the visualization results of the raw data analysis.  
 
 -./project1/report.pdf: the report from our team for this project.  
 
