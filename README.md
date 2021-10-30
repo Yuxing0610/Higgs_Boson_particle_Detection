@@ -5,6 +5,7 @@ Contains Following files
 
 
 !!!!!
+train.csv and test.csv have been removed from this zip file. They should locate at ./project1/data/
 To execute run.py, please enter project1/scripts/ and type 'python run.py'
 !!!!!
 
@@ -20,6 +21,7 @@ To execute run.py, please enter project1/scripts/ and type 'python run.py'
 >--./project1/scrip/visualization_rawdata.ipynb: notebook to give the visualization results of the raw data analysis.  
 
 -./report.pdf: the report from our team for this project.  
+-./submission.zip: submission zip file for our project  
 
 
   
